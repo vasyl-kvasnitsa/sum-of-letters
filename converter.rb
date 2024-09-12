@@ -2,6 +2,8 @@ require 'byebug'
 
 class Converter
 
+  class LettersNotFound < Exception; end
+
   EN = :en
   UK = :uk
   RU = :ru
@@ -17,6 +19,8 @@ class Converter
   def matching
     locale_arrays = ALPHABETS[@locale].each_slice(9).to_a
 
+    raise LettersNotFound unless @word.chars.all? { |ch| ALPHABETS[@locale].include?(ch) }
+
     @result = @word.chars.map { |ch| locale_arrays.find { |array| array.include?(ch) }&.index(ch).to_i + 1 }
 
     @word.chars.map.each_with_index { |l, i| "#{l} -> #{@result[i]}" }.join("\n")
@@ -29,7 +33,7 @@ class Converter
   private
 
   def initialize(word, locale)
-    @word = word.downcase
+    @word = word.gsub(/\s+/, "").downcase
     @locale = locale
 
     @result = []

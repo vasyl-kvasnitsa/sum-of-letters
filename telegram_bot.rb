@@ -9,16 +9,19 @@ class TelegramBot
     Converter::EN => {
       choose_language: 'Choose the language:',
       write_the_word: 'Now write the word you want to convert:',
+      no_letters: 'Not all letters are present in English',
       result: 'The result is ',
     },
     Converter::UK => {
       choose_language: 'Виберіть мову:',
       write_the_word: 'Зараз напишіть слово, яке слід конвертувати:',
+      no_letters: 'Не всі букви присутні в українській мові',
       result: 'Результат '
     },
     Converter::RU => {
       choose_language: 'Вібірітє язік:',
       write_the_word: 'Напішітє слово, котороє нада конвертіровать:',
+      no_letters: 'Нє всє букви сущєствуют в русском',
       result: 'Рєзультат '
     }
   }
@@ -40,6 +43,10 @@ class TelegramBot
         send_message(message.chat.id, { text: converter.matching})
         send_message(message.chat.id, { text: PHRASES.dig(@language, :result) + converter.sum_of_letters.to_s })
       end
+    rescue Converter::LettersNotFound
+      send_message(message.chat.id, { text: PHRASES.dig(@language, :no_letters) })
+      languages = keyboard_markup({ keyboard: Converter::AVAILABLE_ALPHABETS.values.map { |l| [button(text: l)] } })
+      send_message(message.chat.id, { text: PHRASES.dig(@language, :choose_language), reply_markup: languages })
     rescue => e
       puts e.message
     end
