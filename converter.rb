@@ -16,6 +16,8 @@ class Converter
     RU => %w(а б в г д е ж з и й к л м н о п р с т у ф х ц ч ш щ ъ ы ь э ю я)
   }
 
+  COUNT_OF_LARIANTS = 22
+
   def matching
     locale_arrays = ALPHABETS[@locale].each_slice(9).to_a
 
@@ -27,7 +29,9 @@ class Converter
   end
 
   def sum_of_letters
-    @result.sum
+    sum = @result.sum
+
+    adjust_result_to_lariants(sum)
   end
 
   private
@@ -37,5 +41,9 @@ class Converter
     @locale = locale
 
     @result = []
+  end
+
+  def adjust_result_to_lariants(sum)
+    sum > COUNT_OF_LARIANTS ? adjust_result_to_lariants(sum - COUNT_OF_LARIANTS) : sum
   end
 end
